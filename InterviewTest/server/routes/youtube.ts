@@ -14,14 +14,14 @@ router.get('/youtube-data', async (req, res) => {
 
   try {
     // Debug 最終優化後寫法
-    // const results = await Promise.all(
-    //   youtubeIds.map(async (id) => {
-    //     const channelPage = await getPage(`https://www.youtube.com/${id}`);
-    //     const videosPage = await getPage(`https://www.youtube.com/${id}/videos`);
-    //     return { id, channelPage, videosPage };
-    //   })
-    // );
-    // res.json(results);
+    const results = await Promise.all(
+      youtubeIds.map(async (id) => {
+        const channelPage = await getPage(`https://www.youtube.com/${id}`);
+        const videosPage = await getPage(`https://www.youtube.com/${id}/videos`);
+        return { id, channelPage, videosPage };
+      })
+    );
+    res.json(results);
 
     // Debug 第1種解法
     // var promises = [];
@@ -68,23 +68,23 @@ router.get('/youtube-data', async (req, res) => {
     // res.json(results);
 
     // Debug 第3種解法
-    var promises = youtubeIds.map((id)=>{
-      return new Promise(async (resolve, reject) => {
-        try {
-          var channelURL = `https://www.youtube.com/${id}`;
-          var channelPage = await getPage(channelURL);
+    // var promises = youtubeIds.map((id)=>{
+    //   return new Promise(async (resolve, reject) => {
+    //     try {
+    //       var channelURL = `https://www.youtube.com/${id}`;
+    //       var channelPage = await getPage(channelURL);
   
-          var videosURL = `https://www.youtube.com/${id}/videos`;
-          var videosPage = await getPage(videosURL);
-          console.log(id, channelURL, videosURL);
-          resolve({ channelPage, videosPage });
-        } catch (e) {
-          reject(e);
-        }
-      })
-    });
-    var results = await Promise.all(promises);
-    res.json(results);
+    //       var videosURL = `https://www.youtube.com/${id}/videos`;
+    //       var videosPage = await getPage(videosURL);
+    //       console.log(id, channelURL, videosURL);
+    //       resolve({ channelPage, videosPage });
+    //     } catch (e) {
+    //       reject(e);
+    //     }
+    //   })
+    // });
+    // var results = await Promise.all(promises);
+    // res.json(results);
 
   } catch (e) {
     res.status(500).json({ error: (e as Error).message });
